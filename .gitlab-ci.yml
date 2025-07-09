@@ -1,0 +1,199 @@
+---
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+
+default:
+  image: python:3.13.2-bullseye
+  tags:
+    - default
+
+variables:
+  FF_USE_FASTZIP: "true"
+  ARTIFACT_COMPRESSION_LEVEL: "fast"
+  CACHE_COMPRESSION_LEVEL: "fast"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  key: "$CI_PROJECT_ID-pip-cache"
+  paths:
+    - .cache/pip
+
+.requirements-cache: &requirements-cache
+  key:
+    files:
+      - requirements.txt
+  paths:
+    - .cache/pip
+    - venv
+  policy: pull
+
+stages:
+  - install
+  - check
+  - lint
+  - test
+  - verify
+  - build
+  - release
+
+install-dependencies:
+  stage: install
+  artifacts:
+    expire_in: 1 week
+  cache:
+    key:
+      files:
+        - requirements.txt
+    paths:
+      - .cache/pip
+      - venv/
+    policy: pull-push
+  script:
+    - python -m pip install --upgrade pip
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+    - pip install -r requirements.txt
+
+.check-licenses:
+  stage: check
+  allow_failure: false
+  needs:
+    - install-dependencies
+  cache:
+    - <<: *requirements-cache
+  script:
+    - source venv/bin/activate
+    - licensecheck
+
+.check-security:
+  stage: check
+  allow_failure: false
+  needs:
+    - install-dependencies
+  cache:
+    - <<: *requirements-cache
+  script:
+    - source venv/bin/activate
+    - bandit -r ./src/
+
+lint-markdown:
+  stage: lint
+  image: registry.gitlab.com/pipeline-components/markdownlint:latest
+  script:
+    - mdl .
+
+lint-python:
+  stage: lint
+  needs:
+    - install-dependencies
+  cache:
+    - <<: *requirements-cache
+  script:
+    - source venv/bin/activate
+    - ruff check $(git ls-files '*.py')
+
+lint-typings:
+  stage: lint
+  needs:
+    - install-dependencies
+  cache:
+    - <<: *requirements-cache
+  script:
+    - source venv/bin/activate
+    - pyright --pythonversion 3.13 .
+
+lint-complexity:
+  stage: lint
+  needs:
+    - install-dependencies
+  cache:
+    - <<: *requirements-cache
+  script:
+    - source venv/bin/activate
+    - xenon --exclude "venv/*" --max-absolute B --max-modules B --max-average A .
+
+.unit-tests:
+  stage: test
+  needs:
+    - install-dependencies
+  cache:
+    - <<: *requirements-cache
+  script:
+    - source venv/bin/activate
+    - coverage run -m pytest
+    - coverage report
+    - coverage xml
+  coverage: '/TOTAL.*\s+(\d+\%)/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    expire_in: 14 days
+
+.verify:
+  stage: verify
+  script:
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+    - pip install -r requirements.txt
+    - pytest
+
+.verify-python-3.9:
+  image: python:3.9.21-bullseye
+  extends: .verify
+
+.verify-python-3.10:
+  image: python:3.10.16-bullseye
+  extends: .verify
+
+.verify-python-3.11:
+  image: python:3.11.11-bullseye
+  extends: .verify
+
+.verify-python-3.12:
+  image: python:3.12.8-bullseye
+  extends: .verify
+
+# Broken until Gitlab Runner 17.7
+# See: https://gitlab.com/gitlab-org/gitlab-runner/-/issues/38267
+.verify-python-3.13-windows:
+  image: winamd64/python:3.13-windowsservercore-1809
+  stage: verify
+  script:
+    - pip install virtualenv
+    - virtualenv venv
+    - .\venv\Scripts\Activate.ps1
+    - pip install -r requirements.txt
+    - pytest
+  tags:
+    - windows
+
+.build-library:
+  stage: build
+  needs:
+    - install-dependencies
+  cache:
+    - <<: *requirements-cache
+  script:
+    - source venv/bin/activate
+    - python -m build
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+  only:
+    refs:
+      - tags
+
+.release_job:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo "Running release_job"
+  release:
+    tag_name: '$CI_COMMIT_TAG'
+    description: '$CI_COMMIT_TAG_MESSAGE'
+    ref: '$CI_COMMIT_SHA'

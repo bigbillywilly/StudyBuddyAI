@@ -1,0 +1,111 @@
+[build-system]
+requires = [ "setuptools", "setuptools-scm",]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "testeract-REPLACE_WITH_PROJECT_NAME"
+description = ""
+requires-python = ">=3.13"
+keywords = []
+classifiers = []
+dependencies = []
+dynamic = [ "version", "readme",]
+
+[[project.authors]]
+name = "Testeract"
+email = "info@testeract.com"
+
+[project.urls]
+Homepage = ""
+Documentation = ""
+Repository = ""
+Changelog = ""
+
+[tool.setuptools.dynamic.version]
+attr = "__version__"
+
+[tool.setuptools.dynamic.readme]
+file = "README.md"
+
+[tool.setuptools.packages.find]
+where = [ "src",]
+include = [ "<dir>*",]
+
+[tool.setuptools.package-data]
+"testeract_hwlib.device_configuration.configurations" = [ "*.ini", "*.yaml",]
+
+[tool.setuptools_scm]
+
+[tool.pytest.ini_options]
+addopts = "--maxfail=10"
+mock_use_standalone_module = true
+testpaths = [ "tests",]
+pythonpath = [ "src", "tests",]
+
+[tool.ruff]
+target-version = "py313"
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+line-length = 100
+
+[tool.ruff.lint]
+select = [ "E", "F",]
+ignore = []
+fixable = [ "A", "B", "C", "D", "E", "F",]
+unfixable = []
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+
+[tool.pyright]
+include = [ "src",]
+exclude = [ "**/node_modules", "**/__pycache__", "**/venv", "**/tests",]
+venvPath = "venv"
+reportMissingImports = true
+reportMissingTypeStubs = false
+pythonVersion = "3.13"
+pythonPlatform = "Windows"
+
+[[tool.pyright.executionEnvironments]]
+root = "src"
+
+[tool.black]
+line-length = 100
+target-version = [ "py313",]
+preview = false
+
+[tool.licensecheck]
+using = "requirements:requirements.txt"
+format = "simple"
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.coverage.run]
+omit = [ "tests/*", "scripts/*", "**/api/*", "conftest.py",]
+
+[tool.radon]
+ignore = "venv"
+
+[tool.bandit]
+exclude_dirs = [ "tests", "venv",]
