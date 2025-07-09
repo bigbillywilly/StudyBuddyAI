@@ -2,14 +2,18 @@
 requires = [ "setuptools", "setuptools-scm",]
 build-backend = "setuptools.build_meta"
 
-[project]
-name = "testeract-REPLACE_WITH_PROJECT_NAME"
-description = ""
-requires-python = ">=3.13"
-keywords = []
-classifiers = []
-dependencies = []
-dynamic = [ "version", "readme",]
+name = "studybuddy-ai"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "openai",
+  "whisper",
+  "torch",
+  "fastapi",
+  "uvicorn",
+  "pydantic",
+  "python-multipart"
+]
 
 [[project.authors]]
 name = "Testeract"
