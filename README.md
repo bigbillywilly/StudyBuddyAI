@@ -120,3 +120,6 @@ The pipeline defines the following stages: install, check, lint, test, verify, b
   - .release_job: Purpose: Uses GitLab’s Release CLI to create a release. It sets the release
     tag, description, and reference based on the Git commit. Execution Rule: This job only runs
     if a Git tag is present (if: $CI_COMMIT_TAG).
+
+# StudyBuddyAI
+StudyBuddy AI is a Python backend that uses OpenAI GPT and Whisper to transcribe lectures, summarize content, and generate quizzes. Designed for students of all backgrounds, it offers accessible, AI-powered tools to improve learning and retention. Built with FastAPI.
