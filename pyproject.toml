@@ -1,115 +1,163 @@
 [build-system]
-requires = [ "setuptools", "setuptools-scm",]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
+[project]
 name = "studybuddy-ai"
-version = "0.1.0"
+version = "1.0.0"
+description = "AI-powered study assistant with personalized learning style adaptation"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Willy Ngo", email = "willy.ngo@testeract.com"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
 requires-python = ">=3.12"
 dependencies = [
-  "openai",
-  "whisper",
-  "torch",
-  "fastapi",
-  "uvicorn",
-  "pydantic",
-  "python-multipart"
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "openai>=1.3.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "python-multipart>=0.0.6",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "structlog>=23.2.0",
 ]
 
-[[project.authors]]
-name = "Testeract"
-email = "info@testeract.com"
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "pre-commit>=3.5.0",
+    "radon>=6.0.1",
+]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.4.0",
+    "mkdocstrings[python]>=0.24.0",
+]
+monitoring = [
+    "prometheus-client>=0.19.0",
+    "psutil>=5.9.0",
+]
 
 [project.urls]
-Homepage = ""
-Documentation = ""
-Repository = ""
-Changelog = ""
+Homepage = "https://github.com/bigbillywilly/StudyBuddyAI.git"
+Documentation = "https://github.com/bigbillywilly/StudyBuddyAI.git"
+Repository = "https://github.com/bigbillywilly/StudyBuddyAI.git"
+Issues = "https://github.com/bigbillywilly/StudyBuddyAI.git"
 
-[tool.setuptools.dynamic.version]
-attr = "__version__"
+[project.scripts]
+studybuddy = "src.api.main:main"
 
-[tool.setuptools.dynamic.readme]
-file = "README.md"
-
-[tool.setuptools.packages.find]
-where = [ "src",]
-include = [ "<dir>*",]
-
-[tool.setuptools.package-data]
-"testeract_hwlib.device_configuration.configurations" = [ "*.ini", "*.yaml",]
-
-[tool.setuptools_scm]
-
-[tool.pytest.ini_options]
-addopts = "--maxfail=10"
-mock_use_standalone_module = true
-testpaths = [ "tests",]
-pythonpath = [ "src", "tests",]
-
-[tool.ruff]
-target-version = "py313"
-exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
-]
-line-length = 100
-
-[tool.ruff.lint]
-select = [ "E", "F",]
-ignore = []
-fixable = [ "A", "B", "C", "D", "E", "F",]
-unfixable = []
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
-[tool.ruff.lint.per-file-ignores]
-
-[tool.pyright]
-include = [ "src",]
-exclude = [ "**/node_modules", "**/__pycache__", "**/venv", "**/tests",]
-venvPath = "venv"
-reportMissingImports = true
-reportMissingTypeStubs = false
-pythonVersion = "3.13"
-pythonPlatform = "Windows"
-
-[[tool.pyright.executionEnvironments]]
-root = "src"
-
+# Tool configurations
 [tool.black]
 line-length = 100
-target-version = [ "py313",]
-preview = false
+target-version = ['py312']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
 
-[tool.licensecheck]
-using = "requirements:requirements.txt"
-format = "simple"
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["F401", "F811"]
+
+[tool.mypy]
+python_version = "3.12"
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src",
+    "--cov-report=html",
+    "--cov-report=term-missing",
+    "--maxfail=10",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+pythonpath = ["src", "tests"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/tests/*", "*/venv/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
 
 [tool.isort]
 profile = "black"
 line_length = 100
 
-[tool.coverage.run]
-omit = [ "tests/*", "scripts/*", "**/api/*", "conftest.py",]
+[tool.bandit]
+exclude_dirs = ["tests", "venv"]
 
 [tool.radon]
 ignore = "venv"
-
-[tool.bandit]
-exclude_dirs = [ "tests", "venv",]

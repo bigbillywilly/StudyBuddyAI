@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyBuddy AI - Learning Assistant</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass { backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.1); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="gradient-bg text-white py-6">
+            <div class="container mx-auto px-4">
+                <h1 class="text-4xl font-bold text-center">StudyBuddy AI</h1>
+                <p class="text-center mt-2 text-blue-100">Your Personalized Learning Assistant</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- Feature Cards -->
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="text-blue-600 text-3xl mb-4">📝</div>
+                    <h3 class="text-xl font-semibold mb-2">Smart Summaries</h3>
+                    <p class="text-gray-600">Get personalized summaries adapted to your learning style</p>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="text-green-600 text-3xl mb-4">🧠</div>
+                    <h3 class="text-xl font-semibold mb-2">Quiz Generator</h3>
+                    <p class="text-gray-600">Create practice quizzes from any educational content</p>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-lg card-hover">
+                    <div class="text-purple-600 text-3xl mb-4">🎵</div>
+                    <h3 class="text-xl font-semibold mb-2">Audio Transcription</h3>
+                    <p class="text-gray-600">Convert lectures and audio notes to searchable text</p>
+                </div>
+            </div>
+
+            <!-- Text Summarization Tool -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-2xl font-bold mb-4">📝 Text Summarization</h2>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Learning Style:</label>
+                    <select id="learningStyle" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <option value="reading">Reading/Writing</option>
+                        <option value="visual">Visual</option>
+                        <option value="auditory">Auditory</option>
+                        <option value="kinesthetic">Kinesthetic</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Text to Summarize:</label>
+                    <textarea 
+                        id="inputText" 
+                        rows="6" 
+                        class="w-full p-3 border border-gray-300 rounded-lg"
+                        placeholder="Paste your educational content here..."></textarea>
+                </div>
+
+                <button 
+                    onclick="generateSummary()" 
+                    class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    Generate Summary
+                </button>
+
+                <div id="summaryResult" class="mt-4 p-4 bg-gray-50 rounded-lg hidden">
+                    <h3 class="font-semibold mb-2">Summary:</h3>
+                    <div id="summaryText"></div>
+                </div>
+            </div>
+
+            <!-- Audio Transcription Tool -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-2xl font-bold mb-4">🎵 Audio Transcription</h2>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Audio File:</label>
+                    <input 
+                        type="file" 
+                        id="audioFile" 
+                        accept=".mp3,.wav,.m4a,.mp4,.webm"
+                        class="w-full p-3 border border-gray-300 rounded-lg">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Context (optional):</label>
+                    <input 
+                        type="text" 
+                        id="audioContext" 
+                        placeholder="e.g., Biology lecture about photosynthesis"
+                        class="w-full p-3 border border-gray-300 rounded-lg">
+                </div>
+
+                <button 
+                    onclick="transcribeAudio()" 
+                    class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
+                    Transcribe Audio
+                </button>
+
+                <div id="transcriptionResult" class="mt-4 p-4 bg-gray-50 rounded-lg hidden">
+                    <h3 class="font-semibold mb-2">Transcription:</h3>
+                    <div id="transcriptionText"></div>
+                </div>
+            </div>
+
+            <!-- Quiz Generator Tool -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-4">🧠 Quiz Generator</h2>
+                
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Number of Questions:</label>
+                        <select id="numQuestions" class="w-full p-3 border border-gray-300 rounded-lg">
+                            <option value="3">3 Questions</option>
+                            <option value="5">5 Questions</option>
+                            <option value="7">7 Questions</option>
+                            <option value="10">10 Questions</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Difficulty Level:</label>
+                        <select id="difficulty" class="w-full p-3 border border-gray-300 rounded-lg">
+                            <option value="middle_school">Middle School</option>
+                            <option value="high_school">High School</option>
+                            <option value="college">College</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Source Content:</label>
+                    <textarea 
+                        id="quizText" 
+                        rows="6" 
+                        class="w-full p-3 border border-gray-300 rounded-lg"
+                        placeholder="Enter the content you want to create quiz questions from..."></textarea>
+                </div>
+
+                <button 
+                    onclick="generateQuiz()" 
+                    class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                    Generate Quiz
+                </button>
+
+                <div id="quizResult" class="mt-4 hidden">
+                    <h3 class="font-semibold mb-4">Generated Quiz:</h3>
+                    <div id="quizQuestions"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+
+        async function generateSummary() {
+            const text = document.getElementById('inputText').value;
+            const learningStyle = document.getElementById('learningStyle').value;
+            
+            if (!text.trim()) {
+                alert('Please enter some text to summarize');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/summarize`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: text,
+                        learning_style: learningStyle,
+                        max_tokens: 300
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('summaryText').innerText = data.summary;
+                    document.getElementById('summaryResult').classList.remove('hidden');
+                } else {
+                    alert('Error: ' + data.detail);
+                }
+            } catch (error) {
+                alert('Network error: ' + error.message);
+            }
+        }
+
+        async function transcribeAudio() {
+            const fileInput = document.getElementById('audioFile');
+            const context = document.getElementById('audioContext').value;
+            
+            if (!fileInput.files[0]) {
+                alert('Please select an audio file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            if (context) formData.append('context_prompt', context);
+
+            try {
+                const response = await fetch(`${API_BASE}/transcribe`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('transcriptionText').innerText = data.transcription;
+                    document.getElementById('transcriptionResult').classList.remove('hidden');
+                } else {
+                    alert('Error: ' + data.detail);
+                }
+            } catch (error) {
+                alert('Network error: ' + error.message);
+            }
+        }
+
+        async function generateQuiz() {
+            const text = document.getElementById('quizText').value;
+            const numQuestions = document.getElementById('numQuestions').value;
+            const difficulty = document.getElementById('difficulty').value;
+            const learningStyle = document.getElementById('learningStyle').value;
+            
+            if (!text.trim()) {
+                alert('Please enter content for quiz generation');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/quiz/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: text,
+                        num_questions: parseInt(numQuestions),
+                        difficulty: difficulty,
+                        learning_style: learningStyle
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayQuiz(data.questions);
+                    document.getElementById('quizResult').classList.remove('hidden');
+                } else {
+                    alert('Error: ' + data.detail);
+                }
+            } catch (error) {
+                alert('Network error: ' + error.message);
+            }
+        }
+
+        function displayQuiz(questions) {
+            const container = document.getElementById('quizQuestions');
+            container.innerHTML = '';
+            
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'mb-6 p-4 border border-gray-200 rounded-lg';
+                questionDiv.innerHTML = `
+                    <h4 class="font-semibold mb-3">${index + 1}. ${q.question}</h4>
+                    <div class="space-y-2 mb-3">
+                        ${q.options.map((option, i) => `
+                            <label class="flex items-center">
+                                <input type="radio" name="q${index}" value="${String.fromCharCode(65 + i)}" class="mr-2">
+                                <span>${String.fromCharCode(65 + i)}. ${option}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <details class="text-sm text-gray-600">
+                        <summary class="cursor-pointer font-medium">Show Answer & Explanation</summary>
+                        <p class="mt-2"><strong>Correct Answer:</strong> ${q.correct_answer}</p>
+                        <p class="mt-1"><strong>Explanation:</strong> ${q.explanation}</p>
+                    </details>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+    </script>
+</body>
+</html>
