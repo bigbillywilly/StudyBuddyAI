@@ -1,0 +1,23 @@
+cd "c:\Users\willy\projects\studyBuddyAI\StudyBuddyAI\backEnd"
+.\venv\Scripts\Activate.ps1
+
+pip install -r requirements.txt
+
+pip install fastapi pydantic uvicorn python-dotenv
+
+# ========================================
+# RUNNING THE SERVER
+# ========================================
+
+# Option 1: Simple uvicorn command (EASIEST)
+uvicorn src.api.main:app --reload
+
+# Option 2: Uvicorn with specific host and port
+uvicorn src.api.main:app --reload --host 127.0.0.1 --port 8000
+
+# Option 3: Use the full path to python in virtual environment
+.\venv\Scripts\python.exe src/api/main.py
+
+# The server will start on: http://127.0.0.1:8000
+# API Documentation will be available at: http://127.0.0.1:8000/docs
+# Alternative docs at: http://127.0.0.1:8000/redoc
