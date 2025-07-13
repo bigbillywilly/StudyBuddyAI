@@ -122,37 +122,37 @@ async def global_exception_handler(request: Request, exc: Exception):
 try:
     from src.api.routes.summarization import router as summarization_router
     app.include_router(summarization_router)
-    logger.info("✅ Summarization routes loaded")
+    logger.info("Summarization routes loaded")
 except ImportError as e:
-    logger.error(f"❌ Failed to load summarization routes: {e}")
+    logger.error(f"Failed to load summarization routes: {e}")
 
 try:
     from src.api.routes.quiz import router as quiz_router
     app.include_router(quiz_router)
-    logger.info("✅ Quiz routes loaded")
+    logger.info("Quiz routes loaded")
 except ImportError as e:
-    logger.error(f"❌ Failed to load quiz routes: {e}")
+    logger.error(f"Failed to load quiz routes: {e}")
 
 try:
     from src.api.routes.health import router as health_router
     app.include_router(health_router)
-    logger.info("✅ Health routes loaded")
+    logger.info("Health routes loaded")
 except ImportError as e:
-    logger.error(f"❌ Failed to load health routes: {e}")
+    logger.error(f"Failed to load health routes: {e}")
     
 try:
     from src.api.routes.health import router as health_router
     app.include_router(health_router)
-    logger.info("✅ Health routes loaded")
+    logger.info("Health routes loaded")
 except ImportError as e:
-    logger.error(f"❌ Failed to load health routes: {e}")
+    logger.error(f"Failed to load health routes: {e}")
 
 try:
     from src.api.routes.transcription import router as transcription_router
     app.include_router(transcription_router)
-    logger.info("✅ Transcription routes loaded")
+    logger.info(" Transcription routes loaded")
 except ImportError as e:
-    logger.error(f"❌ Failed to load transcription routes: {e}")
+    logger.error(f"Failed to load transcription routes: {e}")
 
 # ========================================
 # BASIC ENDPOINTS
