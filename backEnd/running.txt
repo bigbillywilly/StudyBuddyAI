@@ -12,6 +12,8 @@ pip install fastapi pydantic uvicorn python-dotenv
 # Option 1: Simple uvicorn command (EASIEST)
 uvicorn src.api.main:app --reload
 
+on the front end just run npm run build
+
 # Option 2: Uvicorn with specific host and port
 uvicorn src.api.main:app --reload --host 127.0.0.1 --port 8000
 
