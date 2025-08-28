@@ -1,6 +1,6 @@
 # StudyBuddyAI
 
-StudyBuddyAI is a Python backend that uses OpenAI GPT and Whisper to transcribe lectures, summarize content, and generate quizzes. It provides students with AI-powered tools to make learning easier and more effective.
+StudyBuddyAI is a Python backend that uses OpenAI GPT and Whisper to transcribe lectures, summarize content, and generate quizzes. Made for my little cousin to use as a tool in highschool.
 
 ### Features
 - Lecture transcription to convert spoken lectures into text  
