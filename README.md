@@ -16,5 +16,14 @@ StudyBuddyAI is a Python backend that uses OpenAI GPT and Whisper to transcribe 
 ### Getting Started
 1. Clone the repository  
    ```bash
-   git clone https://github.com/your-username/studybuddyai.git
-   cd studybuddyai
+   git clone https://github.com/bigbillywilly/studybuddyai.git
+   cd StudyBuddyAI
+2. Install dependencies
+   ```bash
+   pip install -r requirements.txt
+3. Run the FastAPI server
+   ```bash
+   uvicorn app.main:app --reload
+4. Access the API documentation at
+   ```bash
+   http://127.0.0.1:8000/docs
